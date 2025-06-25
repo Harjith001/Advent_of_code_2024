@@ -9,37 +9,44 @@ public class Day3 {
 
     private static final String SOURCE = "input3.txt";
 
-    
     private String inputToString(){
-        String input ="";
+        StringBuilder input = new StringBuilder();
         try (BufferedReader bis = new BufferedReader(new FileReader(SOURCE))){
             String content;
             while((content = bis.readLine())!= null){
-                input+=content;
+                input.append(content);
             }
-
-
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
         }
-        return input;
+        return input.toString();
     }
 
     public static void main(String[] args) {
-
         Day3 d = new Day3();
         String input = d.inputToString();
-        
-        Pattern pattern = Pattern.compile("mul\\((\\d{1,3}),(\\d{1,3})\\)");
+
+        // Match mul(x,y), do(), don't()
+        Pattern pattern = Pattern.compile("mul\\((\\d{1,3}),(\\d{1,3})\\)|do\\(\\)|don't\\(\\)");
         Matcher matcher = pattern.matcher(input);
 
         int total = 0;
+        boolean enabled = true;
 
         while (matcher.find()) {
-            int x = Integer.parseInt(matcher.group(1));
-            int y = Integer.parseInt(matcher.group(2));
-            total += x * y;
+            String match = matcher.group();
+
+            if (match.equals("do()")) {
+                enabled = true;
+            } else if (match.equals("don't()")) {
+                enabled = false;
+            } else if (match.startsWith("mul(") && enabled) {
+                int x = Integer.parseInt(matcher.group(1));
+                int y = Integer.parseInt(matcher.group(2));
+                total += x * y;
+            }
         }
+
         System.out.println(total);
     }
 }
